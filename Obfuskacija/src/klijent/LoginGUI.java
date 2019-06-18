@@ -6,6 +6,7 @@
 package klijent;
 
 import java.awt.Color;
+import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
@@ -15,6 +16,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,7 +39,7 @@ public class LoginGUI extends javax.swing.JFrame {
     private String korisnickoIme = "";
     private String lozinka = "";
     private String putanjaDoSertifikata = "";
-    private static String putanjaDoKljuceva = "";
+    private static String putanjaDoKljuceva = "./kljucevi/";
     private static Poruka poruka;
     private static final int PORT=9000;
     private static ObjectOutputStream out;
@@ -52,12 +55,15 @@ public class LoginGUI extends javax.swing.JFrame {
         this.setTitle("Prijava na sistem");
         neuspjesnoLogovanjeLabel.setForeground(Color.red);
         setLocationRelativeTo(null);
+        
+       // javniKljucServera = PomocnaKlasa.procitajKljuceve("./kljucevi/server.pem").getPublic();
         try {
             Security.addProvider(new BouncyCastleProvider());
             InetAddress addr = InetAddress.getByName("127.0.0.1");
             sock = new Socket(addr, PORT);
             out = new ObjectOutputStream(sock.getOutputStream());
             in = new ObjectInputStream(sock.getInputStream());
+            
 
             
         } catch (Exception ex) {
@@ -127,29 +133,27 @@ public class LoginGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(229, 229, 229)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(prijavaButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(sertifikatButton, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(korisnickoImeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
-                                    .addComponent(lozinkaLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(sertifikatPutanjaLabel)
-                                .addGap(0, 0, Short.MAX_VALUE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(korisnickoImeTextBox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
-                                .addComponent(lozinkaTextField, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING))
-                            .addComponent(neuspjesnoLogovanjeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(35, 35, 35))))
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(korisnickoImeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+                            .addComponent(lozinkaLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(sertifikatPutanjaLabel)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(neuspjesnoLogovanjeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(sertifikatButton, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
+                            .addComponent(korisnickoImeTextBox, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lozinkaTextField, javax.swing.GroupLayout.Alignment.LEADING))))
+                .addGap(95, 95, 95))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(prijavaButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(122, 122, 122))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -170,9 +174,9 @@ public class LoginGUI extends javax.swing.JFrame {
                 .addComponent(sertifikatButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(neuspjesnoLogovanjeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(prijavaButton)
-                .addGap(22, 22, 22))
+                .addContainerGap(23, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -180,9 +184,9 @@ public class LoginGUI extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(30, Short.MAX_VALUE)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 348, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(24, 24, 24))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -196,19 +200,25 @@ public class LoginGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void prijavaButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prijavaButtonActionPerformed
-        neuspjesnoLogovanjeLabel.setText("Pogrešno korisničko ime ili lozinka");
-        char[] lozinkaChar = lozinkaTextField.getPassword();
-        //lozinka = String.valueOf(lozinkaChar);
+        Security.addProvider(new BouncyCastleProvider());
+        neuspjesnoLogovanjeLabel.setText("");
         korisnickoIme = korisnickoImeTextBox.getText();
+        char[] lozinkaChar = lozinkaTextField.getPassword();
         putanjaDoSertifikata = sertifikatPutanjaTextArea.getText();
-        System.out.println("Korisnicko ime:" + korisnickoIme + ", Lozinka: " + String.valueOf(lozinkaChar) + ", Putanja do sertifikata: " + putanjaDoSertifikata);
+        //lozinka = String.valueOf(lozinkaChar);
+        
+        System.out.println("Korisnicko ime:" + korisnickoIme + ", Lozinka: " + String.valueOf(lozinkaChar) + ", Putanja do sertifikata: " + putanjaDoSertifikata + "");
         try {
            // PomocnaKlasa.hashLozinke(lozinkaChar);
-            KeyPair parKljuceva = PomocnaKlasa.procitajKljuceve(putanjaDoKljuceva);//putanja do sertifikata
+           System.out.println(putanjaDoKljuceva + korisnickoIme + ".pem");
+           KeyPair parKljuceva = PomocnaKlasa.procitajKljuceve("./kljucevi/private.pem");
             javniKljucKlijenta = parKljuceva.getPublic();
             privatniKljucKlijenta = parKljuceva.getPrivate();
-            System.out.println("javni kljuc: " + javniKljucKlijenta.toString());
-            System.out.println("privatni kluc : " + privatniKljucKlijenta.toString());
+           System.out.println("====javni kljuc: " + javniKljucKlijenta.toString());
+            System.out.println("====privatni kluc : " + privatniKljucKlijenta.toString());
+            
+            
+            
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -220,7 +230,7 @@ public class LoginGUI extends javax.swing.JFrame {
         sertifikatPutanjaTextArea.setText("");
         JFileChooser fajl = new JFileChooser();
         fajl.setFileFilter(fileFilter);
-        fajl.setCurrentDirectory(new java.io.File("."));
+        fajl.setCurrentDirectory(new java.io.File("./sertifikati"));
         fajl.setDialogTitle("Putanja do sertifikata");
         fajl.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
