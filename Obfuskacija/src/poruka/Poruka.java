@@ -6,6 +6,8 @@
 package poruka;
 
 import java.io.Serializable;
+import javax.crypto.SecretKey;
+import pomocneKlase.Potpis;
 
 /**
  *
@@ -14,10 +16,12 @@ import java.io.Serializable;
 public class Poruka implements Serializable{
     
     public enum IdPoruke {
-        RAZMJENA_SESIJSKOG_KLJUCA,
-        PROVJERA_PODATAKA_LOGOVANJA,
-        USPJESNA_PRIJAVA,
-        NEUSPJESNA_PRIJAVA,
+        SESIJSKI_KLJUC,
+        PRIJAVA,
+        PRIJAVA_USPJESNA,
+        PRIJAVA_NEUSPJESNA,
+        VERIFIKACIJA_POTPISA_USPJESNA,
+        VERIFIKACIJA_POTPISA_NEUSPJESNA,
         SPISAK_DATOTEKA,
         SLANJE_FAJLA,
         ZAVRSENO_SLANJE_FAJLA,
@@ -25,33 +29,43 @@ public class Poruka implements Serializable{
         ZAVRSENO_PREUZIMANJE_FAJLA,
     }
     
-    private String poruka;
-    private String korisnickoIme;
-    private char[] lozinka;
-    private Object dodatak;
+    private IdPoruke idPoruke = null;
+    private String korisnickoIme = null;
+    private char[] lozinka = null;
+    private Potpis potpis = null;
+    private Object dodatak = null;
 
+    public Poruka(){
+    }
     
-    public Poruka(String poruka){
-        this.poruka = poruka;
+    public Poruka(IdPoruke idPoruke){
+        this.idPoruke = idPoruke;
     }
 
-    public Poruka(String poruka, String korisnickoIme, char[] lozinka) {
-        this.poruka = poruka;
+    public Poruka(IdPoruke idPoruke, String korisnickoIme, char[] lozinka) {
+        this.idPoruke = idPoruke;
         this.korisnickoIme = korisnickoIme;
         this.lozinka = lozinka;
     }
     
-    public Poruka(String poruka, Object dodatak) {
-        this.poruka = poruka;
+    public Poruka(IdPoruke idPoruke, Object dodatak, Potpis potpis) {
+        this.idPoruke = idPoruke;
+        this.dodatak = dodatak;
+        this.potpis =  potpis;
+    }
+    
+    
+    public Poruka(IdPoruke idPoruke, Object dodatak) {
+        this.idPoruke = idPoruke;
         this.dodatak = dodatak;
     }
 
-    public String getPoruka() {
-        return poruka;
+    public IdPoruke getIdPoruke() {
+        return idPoruke;
     }
 
-    public void setPoruka(String poruka) {
-        this.poruka = poruka;
+    public void setIdPoruke(IdPoruke idPoruke){
+        this.idPoruke = idPoruke;
     }
 
     public Object getDodatak() {
@@ -76,6 +90,21 @@ public class Poruka implements Serializable{
 
     public void setLozinka(char[] lozinka) {
         this.lozinka = lozinka;
+    }
+
+    public Potpis getPotpis() {
+        return potpis;
+    }
+
+    public void setPotpis(Potpis potpis) {
+        this.potpis = potpis;
+    }
+    
+    
+    
+    @Override
+    public String toString(){
+        return idPoruke + " / " + dodatak;
     }
     
     

@@ -5,8 +5,11 @@
  */
 package klijent;
 
+import pomocneKlase.PomocnaKlasaKriptografija;
 import java.awt.Color;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
@@ -18,13 +21,17 @@ import java.security.PublicKey;
 import java.security.Security;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.SecretKey;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import pomocneKlase.PomocnaKlasaBajt;
+import pomocneKlase.PomocnaKlasaSlanjePrimanje;
 import poruka.Poruka;
 
 /**
@@ -41,13 +48,14 @@ public class LoginGUI extends javax.swing.JFrame {
     private String putanjaDoSertifikata = "";
     private static String putanjaDoKljuceva = "./kljucevi/";
     private static Poruka poruka;
-    private static final int PORT=9000;
+    private static final int PORT = 9000;
     private static ObjectOutputStream out;
     private static ObjectInputStream in;
     private static Socket sock;
     private static PublicKey javniKljucKlijenta;
     private static PublicKey javniKljucServera;
     private static PrivateKey privatniKljucKlijenta;
+    private static PrivateKey privatniKljucServera;
     private static SecretKey sesijskiKljuc;
 
     public LoginGUI() {
@@ -55,17 +63,25 @@ public class LoginGUI extends javax.swing.JFrame {
         this.setTitle("Prijava na sistem");
         neuspjesnoLogovanjeLabel.setForeground(Color.red);
         setLocationRelativeTo(null);
-        
-       // javniKljucServera = PomocnaKlasa.procitajKljuceve("./kljucevi/server.pem").getPublic();
+
+        // javniKljucServera = PomocnaKlasa.procitajKljuceve("./kljucevi/server").getPublic();
         try {
+//            FileInputStream fis = new FileInputStream(new File("./sertifikati/server.crt"));
+//            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+//            X509Certificate sertifikatServera = (X509Certificate) cf.generateCertificate(fis);
+//            javniKljucServera = sertifikatServera.getPublicKey();
+            KeyPair parKljucevaServera = PomocnaKlasaKriptografija.procitajKljuceve("./kljucevi/server");
+            javniKljucServera = parKljucevaServera.getPublic();
+            privatniKljucServera = parKljucevaServera.getPrivate();
+            System.out.println("JAVNI KLJUC SERVERA: " + javniKljucServera.toString() + "\n\n ");
+            System.out.println("Privatni KLJUC SERVERA: " + privatniKljucServera.toString() + "\n\n ");
+
             Security.addProvider(new BouncyCastleProvider());
             InetAddress addr = InetAddress.getByName("127.0.0.1");
             sock = new Socket(addr, PORT);
             out = new ObjectOutputStream(sock.getOutputStream());
             in = new ObjectInputStream(sock.getInputStream());
-            
 
-            
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -173,10 +189,10 @@ public class LoginGUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sertifikatButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(neuspjesnoLogovanjeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addComponent(neuspjesnoLogovanjeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(prijavaButton)
-                .addContainerGap(23, Short.MAX_VALUE))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -201,26 +217,66 @@ public class LoginGUI extends javax.swing.JFrame {
 
     private void prijavaButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prijavaButtonActionPerformed
         Security.addProvider(new BouncyCastleProvider());
-        neuspjesnoLogovanjeLabel.setText("");
-        korisnickoIme = korisnickoImeTextBox.getText();
-        char[] lozinkaChar = lozinkaTextField.getPassword();
-        putanjaDoSertifikata = sertifikatPutanjaTextArea.getText();
-        //lozinka = String.valueOf(lozinkaChar);
-        
-        System.out.println("Korisnicko ime:" + korisnickoIme + ", Lozinka: " + String.valueOf(lozinkaChar) + ", Putanja do sertifikata: " + putanjaDoSertifikata + "");
-        try {
-           // PomocnaKlasa.hashLozinke(lozinkaChar);
-           System.out.println(putanjaDoKljuceva + korisnickoIme + ".pem");
-           KeyPair parKljuceva = PomocnaKlasa.procitajKljuceve("./kljucevi/private.pem");
-            javniKljucKlijenta = parKljuceva.getPublic();
-            privatniKljucKlijenta = parKljuceva.getPrivate();
-           System.out.println("====javni kljuc: " + javniKljucKlijenta.toString());
-            System.out.println("====privatni kluc : " + privatniKljucKlijenta.toString());
-            
-            
-            
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if (!korisnickoImeTextBox.getText().equals("") || lozinkaTextField.getPassword().length != 0) {
+            neuspjesnoLogovanjeLabel.setText("");
+            korisnickoIme = korisnickoImeTextBox.getText();
+            char[] lozinkaChar = lozinkaTextField.getPassword();
+            putanjaDoSertifikata = sertifikatPutanjaTextArea.getText();
+            //lozinka = String.valueOf(lozinkaChar);
+
+            System.out.println("Korisnicko ime:" + korisnickoIme + ", Lozinka: " + String.valueOf(lozinkaChar) + ", Putanja do sertifikata: " + putanjaDoSertifikata + "");
+            try {
+                // PomocnaKlasa.hashLozinke(lozinkaChar);
+                System.out.println(putanjaDoKljuceva + korisnickoIme + "");
+                //KeyPair parKljuceva = PomocnaKlasa.procitajKljuceve(putanjaDoKljuceva + korisnickoIme);
+                KeyPair parKljuceva = PomocnaKlasaKriptografija.procitajKljuceve(putanjaDoKljuceva + korisnickoIme);
+                javniKljucKlijenta = parKljuceva.getPublic();
+                System.out.println("JAVNI KLJUC KLIJENTA: žn" + javniKljucKlijenta);
+                privatniKljucKlijenta = parKljuceva.getPrivate();
+                //sesijski kljuc 
+                sesijskiKljuc = PomocnaKlasaKriptografija.generisiSesijskiKljuc();
+
+                System.out.println("====SESIJSKI KLJUC:+++++++" + sesijskiKljuc + " VELICINA SESIJSKOG KLJUCA: " + sesijskiKljuc.getAlgorithm());
+
+                Poruka poruka = new Poruka(Poruka.IdPoruke.SESIJSKI_KLJUC, sesijskiKljuc); //konstruktor u Poruka (id, Object, Potpis)
+
+                System.out.println("PROVJERA OBJEKTA poruka kod klijenta " + poruka);
+                System.out.println("PROVJERA OBJEKTA getOut kod klijenta " + getOut());
+              //  Potpis potpis = PomocnaKlasaKriptografija.potpisivanjePoruke(poruka, privatniKljucKlijenta);
+//                System.out.println("|P O T P I S!!!!!!!!" + potpis);
+//                poruka.setPotpis(potpis);
+
+                PomocnaKlasaSlanjePrimanje.posaljiPorukuKriptovanuJavnim(getOut(), poruka, javniKljucServera, privatniKljucKlijenta);
+
+                Poruka porukaLogovanje = new Poruka(Poruka.IdPoruke.PRIJAVA, korisnickoIme, lozinkaChar);
+                PomocnaKlasaSlanjePrimanje.posaljiPotpisanuPorukuKriptovanuSesijskim(out, porukaLogovanje, privatniKljucKlijenta, sesijskiKljuc);
+                Poruka odgovorServera = PomocnaKlasaSlanjePrimanje.primiPotpisanuPoruku(in, javniKljucServera, sesijskiKljuc);
+                // System.out.println("====Potpisana poruka: " + potpisanaPoruka.toString());
+                System.out.println("ODGOVOR SERVERA NA LOGOVANJE: " + odgovorServera.getIdPoruke());
+                //  byte[] kriptovanaJavnimServera = PomocnaKlasaKriptografija.enkriptujJavnimKljucem(potpisanaPoruka, javniKljucServera);
+                //System.out.println("====KRIPTOVANA JAVNIM SERVERA: " + kriptovanaJavnimServera.toString());
+                
+                if(odgovorServera.getIdPoruke() == Poruka.IdPoruke.PRIJAVA_USPJESNA){
+                    
+                }
+                else{
+                    neuspjesnoLogovanjeLabel.setText("Pogresno korisnicko ime/lozinka!");
+                }
+                
+                // if (logovanje Uspjesno) {
+                System.out.println("====javni kljuc: " + javniKljucKlijenta.toString());
+                System.out.println("====privatni kluc : " + privatniKljucKlijenta.toString());
+                //    } else {
+                //    neuspjesnoLogovanjeLabel.setText("Pogresni podaci za prijavu!");
+                //    neuspjesnoLogovanjeLabel.setVisible(true);
+                // }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            neuspjesnoLogovanjeLabel.setText("Unesite korisničke podatke!");
+            neuspjesnoLogovanjeLabel.setForeground(Color.RED);
         }
     }//GEN-LAST:event_prijavaButtonActionPerformed
 
@@ -277,6 +333,14 @@ public class LoginGUI extends javax.swing.JFrame {
                 new LoginGUI().setVisible(true);
             }
         });
+    }
+
+    public static ObjectOutputStream getOut() {
+        return out;
+    }
+
+    public static ObjectInputStream getIn() {
+        return in;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
