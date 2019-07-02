@@ -16,6 +16,7 @@ public class Potpis implements Serializable {
     private byte[] potpis;
     private String hesAlgoritam;
     private boolean verifikovan;
+  //  private string probaPulla;
 
     public Potpis(byte[] potpis, String hesAlgoritam) {
         this.potpis = potpis;
