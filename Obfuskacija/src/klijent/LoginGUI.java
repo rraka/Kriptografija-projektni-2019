@@ -66,15 +66,15 @@ public class LoginGUI extends javax.swing.JFrame {
 
         // javniKljucServera = PomocnaKlasa.procitajKljuceve("./kljucevi/server").getPublic();
         try {
-//            FileInputStream fis = new FileInputStream(new File("./sertifikati/server.crt"));
-//            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-//            X509Certificate sertifikatServera = (X509Certificate) cf.generateCertificate(fis);
-//            javniKljucServera = sertifikatServera.getPublicKey();
-            KeyPair parKljucevaServera = PomocnaKlasaKriptografija.procitajKljuceve("./kljucevi/server");
-            javniKljucServera = parKljucevaServera.getPublic();
-            privatniKljucServera = parKljucevaServera.getPrivate();
+            FileInputStream fis = new FileInputStream(new File("./sertifikati/server.crt"));
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            X509Certificate sertifikatServera = (X509Certificate) cf.generateCertificate(fis);
+            javniKljucServera = sertifikatServera.getPublicKey();
+//            KeyPair parKljucevaServera = PomocnaKlasaKriptografija.procitajKljuceve("./kljucevi/server");
+//            javniKljucServera = parKljucevaServera.getPublic();
+//            privatniKljucServera = parKljucevaServera.getPrivate();
             System.out.println("JAVNI KLJUC SERVERA: " + javniKljucServera.toString() + "\n\n ");
-            System.out.println("Privatni KLJUC SERVERA: " + privatniKljucServera.toString() + "\n\n ");
+//            System.out.println("Privatni KLJUC SERVERA: " + privatniKljucServera.toString() + "\n\n ");
 
             Security.addProvider(new BouncyCastleProvider());
             InetAddress addr = InetAddress.getByName("127.0.0.1");
