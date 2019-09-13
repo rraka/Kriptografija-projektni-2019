@@ -55,12 +55,13 @@ public class LoginGUI extends javax.swing.JFrame {
     private static PublicKey javniKljucKlijenta;
     private static PublicKey javniKljucServera;
     private static PrivateKey privatniKljucKlijenta;
-    private static PrivateKey privatniKljucServera;
     private static SecretKey sesijskiKljuc;
+    private static EnkripcijaDekripcijaGUI enkripcijaDekripcijaGUI;
 
     public LoginGUI() {
         initComponents();
         this.setTitle("Prijava na sistem");
+        // enkripcijaDekripcijaGUI = edGUI;
         neuspjesnoLogovanjeLabel.setForeground(Color.red);
         setLocationRelativeTo(null);
 
@@ -147,29 +148,29 @@ public class LoginGUI extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(korisnickoImeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
-                            .addComponent(lozinkaLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(prijavaButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(sertifikatPutanjaLabel)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(neuspjesnoLogovanjeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(sertifikatButton, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
-                            .addComponent(korisnickoImeTextBox, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lozinkaTextField, javax.swing.GroupLayout.Alignment.LEADING))))
-                .addGap(95, 95, 95))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(prijavaButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(122, 122, 122))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(korisnickoImeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+                                    .addComponent(lozinkaLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(sertifikatPutanjaLabel)
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(sertifikatButton, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
+                                .addComponent(korisnickoImeTextBox, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(lozinkaTextField, javax.swing.GroupLayout.Alignment.LEADING))
+                            .addComponent(neuspjesnoLogovanjeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -185,14 +186,14 @@ public class LoginGUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(sertifikatPutanjaLabel)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sertifikatButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(neuspjesnoLogovanjeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(neuspjesnoLogovanjeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
                 .addComponent(prijavaButton)
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addGap(16, 16, 16))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -201,8 +202,8 @@ public class LoginGUI extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(24, 24, 24))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(23, 23, 23))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -242,7 +243,7 @@ public class LoginGUI extends javax.swing.JFrame {
 
                 System.out.println("PROVJERA OBJEKTA poruka kod klijenta " + poruka);
                 System.out.println("PROVJERA OBJEKTA getOut kod klijenta " + getOut());
-              //  Potpis potpis = PomocnaKlasaKriptografija.potpisivanjePoruke(poruka, privatniKljucKlijenta);
+                //  Potpis potpis = PomocnaKlasaKriptografija.potpisivanjePoruke(poruka, privatniKljucKlijenta);
 //                System.out.println("|P O T P I S!!!!!!!!" + potpis);
 //                poruka.setPotpis(potpis);
 
@@ -255,14 +256,23 @@ public class LoginGUI extends javax.swing.JFrame {
                 System.out.println("ODGOVOR SERVERA NA LOGOVANJE: " + odgovorServera.getIdPoruke());
                 //  byte[] kriptovanaJavnimServera = PomocnaKlasaKriptografija.enkriptujJavnimKljucem(potpisanaPoruka, javniKljucServera);
                 //System.out.println("====KRIPTOVANA JAVNIM SERVERA: " + kriptovanaJavnimServera.toString());
-                
-                if(odgovorServera.getIdPoruke() == Poruka.IdPoruke.PRIJAVA_USPJESNA){
+
+                if (odgovorServera.getIdPoruke() == Poruka.IdPoruke.PRIJAVA_USPJESNA) {
                     
-                }
-                else{
+                    Runnable runnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            new EnkripcijaDekripcijaGUI(korisnickoIme).setVisible(true);
+
+                        }
+                    };
+                    new Thread(runnable).start();
+                    this.setVisible(false);
+
+                } else {
                     neuspjesnoLogovanjeLabel.setText("Pogresno korisnicko ime/lozinka!");
                 }
-                
+
                 // if (logovanje Uspjesno) {
                 System.out.println("====javni kljuc: " + javniKljucKlijenta.toString());
                 System.out.println("====privatni kluc : " + privatniKljucKlijenta.toString());
@@ -282,7 +292,7 @@ public class LoginGUI extends javax.swing.JFrame {
 
     private void sertifikatButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sertifikatButtonActionPerformed
         String izabraniFolder = "";
-        FileNameExtensionFilter fileFilter = new FileNameExtensionFilter(".cer", "cer");
+        FileNameExtensionFilter fileFilter = new FileNameExtensionFilter(".crt", "crt");
         sertifikatPutanjaTextArea.setText("");
         JFileChooser fajl = new JFileChooser();
         fajl.setFileFilter(fileFilter);
@@ -299,41 +309,6 @@ public class LoginGUI extends javax.swing.JFrame {
         }
         sertifikatPutanjaTextArea.setText(izabraniFolder);
     }//GEN-LAST:event_sertifikatButtonActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(LoginGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(LoginGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(LoginGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(LoginGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new LoginGUI().setVisible(true);
-            }
-        });
-    }
 
     public static ObjectOutputStream getOut() {
         return out;

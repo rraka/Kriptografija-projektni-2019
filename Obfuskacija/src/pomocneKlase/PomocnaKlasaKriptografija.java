@@ -20,11 +20,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.InvalidKeyException;
+import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
@@ -44,14 +46,19 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import org.bouncycastle.crypto.CryptoException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 import poruka.Poruka;
 import server.Server;
 import pomocneKlase.Potpis;
+import static sun.security.x509.CertificateAlgorithmId.ALGORITHM;
         
         /**
  *
@@ -251,6 +258,48 @@ public class PomocnaKlasaKriptografija {
         PrivateKey privateKey = keyFactory.generatePrivate(privateKeySpec);
 
         return new KeyPair(publicKey, privateKey);
+    }
+    
+    
+    
+    
+    //kriptovanje 
+    public static void kriptujFajl(SecretKey simetricniKljuc, File inputFile, File outputFile)
+            throws CryptoException, Exception {
+        kriptovanjeDekriptovanjeFajla(Cipher.ENCRYPT_MODE, simetricniKljuc, inputFile, outputFile);
+    }
+    
+    
+    //dekriptovanje
+    public static void dekriptujFajl(SecretKey simetricniKljuc, File inputFile, File outputFile)
+            throws CryptoException, Exception {
+        kriptovanjeDekriptovanjeFajla(Cipher.DECRYPT_MODE, simetricniKljuc, inputFile, outputFile);
+    }
+    
+    
+    //kriptuj/dekriptuj
+    private static void kriptovanjeDekriptovanjeFajla(int cipherMode, SecretKey simetricniKljuc, File inputFile,
+            File outputFile) throws Exception{
+        try {
+            //Key secretKey = new SecretKeySpec(simetricniKljuc.getBytes(), ALGORITHM);
+            Cipher cipher = Cipher.getInstance(simetricniKljuc.getAlgorithm() + "/ECB/PKCS5Padding", "BC");
+            cipher.init(cipherMode, simetricniKljuc);
+             
+            FileInputStream inputStream = new FileInputStream(inputFile);
+            byte[] inputBytes = new byte[(int) inputFile.length()];
+            inputStream.read(inputBytes);
+             
+            byte[] outputBytes = cipher.doFinal(inputBytes);
+             
+            FileOutputStream outputStream = new FileOutputStream(outputFile);
+            outputStream.write(outputBytes);
+             
+            inputStream.close();
+            outputStream.close();
+             
+        } catch (Exception ex) {
+            throw new CryptoException("Greska kod kriptovanja/dekriptovanja fajla", ex);
+        }
     }
 
 }
